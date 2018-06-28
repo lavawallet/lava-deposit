@@ -33,7 +33,8 @@ var test_account= {
 
 contract('LavaWallet', function(accounts) {
 
-  var walletContract ;
+  var walletContract;
+  var lavaDepositContract;
   var tokenContract;
 
 
@@ -43,7 +44,7 @@ contract('LavaWallet', function(accounts) {
       console.log( 'deploying wallet' )
         walletContract = await LavaWallet.deployed();
 
-
+        lavaDepositContract = await LavaDeposit.deployed();
 
   }),
 
@@ -260,16 +261,22 @@ it("can deposit 0xbtc into lava wallet", async function () {
 
     var _0xBitcoinABI = require('../javascript/abi/_0xBitcoinToken.json');
     var LavaWalletABI = require('../javascript/abi/LavaWallet.json');
+    var LavaDepositABI = require('../javascript/abi/LavaDeposit.json');
 
 
 
 
       var addressFrom = test_account.address;
 
+      var tokenRecipient = "0xa7e164d80c874758421102f7be00880739c1d9bc";
+
       var depositAmount = 5000000;
 
-      //??
-      var remoteCallData = '0x01';
+
+      var remoteCallData = tokenRecipient;   
+
+
+      console.log('remoteCallData',remoteCallData)
 
       var txData = web3.eth.abi.encodeFunctionCall({
               name: 'approveAndCall',
@@ -293,7 +300,7 @@ it("can deposit 0xbtc into lava wallet", async function () {
                     "type": "bool"
                   }
               ]
-          }, [walletContract.address, depositAmount, remoteCallData]);
+          }, [lavaDepositContract.address, depositAmount, remoteCallData]);
 
 
           try{
@@ -332,9 +339,12 @@ it("can deposit 0xbtc into lava wallet", async function () {
 
            console.log(sentDeposit)
 
-            var checkDeposit  = await walletContract.balanceOf.call(tokenContract.address,addressFrom, {from: addressFrom});
+            var checkDeposit  = await walletContract.balanceOf.call(tokenContract.address,tokenRecipient, {from: addressFrom});
 
             var accountBalance = await getBalance(walletContract.address,tokenContract)
+
+            //get lava balance
+
             assert.equal(accountBalance.token, 5000000 );
 
             assert.equal(checkDeposit.toNumber(), 5000000 );

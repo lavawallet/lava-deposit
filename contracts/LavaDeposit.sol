@@ -141,13 +141,15 @@ contract LavaDeposit is Owned {
   {
       //we already have approval so lets do a transferFrom - transfer the tokens into this contract
 
-      if(!ERC20Interface(token).transferFrom(from, this, tokens)) revert();
+       if(!ERC20Interface(token).transferFrom(from, this, tokens)) revert();
+
+       if(!ERC20Interface(token).approve( walletContract, tokens)) revert();
 
       //now deposit the tokens into lavawallet and they are still assigned to this contract
-      if(!LavaWalletInterface(token).depositTokens(from, token, tokens)) revert();
+       if(!LavaWalletInterface(walletContract).depositTokens(this, token, tokens)) revert();
 
       //transfer the tokens into the lava balance of the 'to' account
-      if(!LavaWalletInterface(token).transferTokens(to, token, tokens)) revert();
+       if(!LavaWalletInterface(walletContract).transferTokens(to, token, tokens)) revert();
 
 
       Deposit(token, from, to, tokens);
@@ -163,7 +165,7 @@ contract LavaDeposit is Owned {
        */
      function receiveApproval(address from, uint256 tokens, address token, bytes data) public returns (bool success) {
 
-       require(data.length == 21); //21 includes the 0x prefix
+       require(data.length == 20);
 
        //find the address from the data
        address to = bytesToAddr(data);
