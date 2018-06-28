@@ -143,23 +143,19 @@ contract LavaDeposit is Owned {
 
        if(!ERC20Interface(token).transferFrom(from, this, tokens)) revert();
 
-       if(!ERC20Interface(token).approve( walletContract, tokens)) revert();
-
       //now deposit the tokens into lavawallet and they are still assigned to this contract
+       if(!ERC20Interface(token).approve(walletContract, tokens)) revert();
+
        if(!LavaWalletInterface(walletContract).depositTokens(this, token, tokens)) revert();
 
       //transfer the tokens into the lava balance of the 'to' account
        if(!LavaWalletInterface(walletContract).transferTokens(to, token, tokens)) revert();
 
-
-      Deposit(token, from, to, tokens);
+       Deposit(token, from, to, tokens);
 
       return true;
   }
-
-
-
-
+ 
        /*
          Receive approval to spend tokens and perform any action all in one transaction
        */
