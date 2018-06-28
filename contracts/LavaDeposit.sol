@@ -117,9 +117,6 @@ contract LavaDeposit is Owned {
   // balances[tokenContractAddress][EthereumAccountAddress] = 0
    mapping(address => mapping (address => uint256)) balances;
 
-   //token => owner => spender : amount
-   mapping(address => mapping (address => mapping (address => uint256))) allowed;
-
 
    address public walletContract;
 
@@ -155,7 +152,7 @@ contract LavaDeposit is Owned {
 
       return true;
   }
- 
+
        /*
          Receive approval to spend tokens and perform any action all in one transaction
        */
@@ -183,8 +180,7 @@ contract LavaDeposit is Owned {
 
  // ------------------------------------------------------------------------
 
- // Owner can transfer out any accidentally sent ERC20 tokens
- // Owner CANNOT transfer out tokens which were purposefully deposited
+ // Owner can transfer out any accidentally sent ERC20 tokens 
 
  // ------------------------------------------------------------------------
 
@@ -194,10 +190,7 @@ contract LavaDeposit is Owned {
      uint tokenBalance = ERC20Interface(tokenAddress).balanceOf(this);
 
 
-
-
      if(!ERC20Interface(tokenAddress).transfer(owner, tokens)) revert();
-
 
 
      return true;
